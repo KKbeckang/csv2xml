@@ -1,37 +1,36 @@
 import { DataGrid,GridCellParams, GridToolbar  } from '@mui/x-data-grid';
 import { useState } from 'react';
-
+import Papa from 'papaparse';
 
 const DataGridComponent = () => {
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
   
     const parseCSV = (text) => {
-        const lines = text.trim().split('\n');
-        const delimiter = /\t/; // Change the delimiter here
-        const headers = lines[0].split(delimiter);
-      
-        const parsedData = lines.slice(1).map((line) => {
-          const values = line.split(delimiter).map((value) => value.trim());
-          const rowData = headers.reduce((obj, header, index) => {
-            obj[header] = values[index] !== '' && values[index] !== 'N/A' ? values[index] : null;
-            return obj;
-          }, {});
-      
-          rowData.id = rowData['ID'];
-          return rowData;
+        const results = Papa.parse(text, {
+          header: true,
+          dynamicTyping: true,
+          skipEmptyLines: true,
         });
-    
-      setData(parsedData);
-      setColumns(
-        headers.map((key) => ({
-          field: key,
-          headerName: key,
-          resizable: true,
-          sortable: true,
-        }))
-      );
-    };
+      
+        const parsedData = results.data.map((row, index) => {
+          row.id = row['ID'];
+          return row;
+        });
+      
+        const headers = results.meta.fields;
+      
+        setData(parsedData);
+        setColumns(
+          headers.map((key) => ({
+            field: key,
+            headerName: key,
+            resizable: true,
+            sortable: true,
+            editable: key !== 'ID',
+          }))
+        );
+      };
   
     const handleFileUpload = (event) => {
       const file = event.target.files[0];
