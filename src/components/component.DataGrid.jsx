@@ -1,10 +1,28 @@
 import { DataGrid,GridCellParams, GridToolbar  } from '@mui/x-data-grid';
 import { useState } from 'react';
 import Papa from 'papaparse';
+import './component.DataGrid.css';
 
 const DataGridComponent = () => {
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
+
+    const convertCSVToXML = (data) => {
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>';
+      xml += '<TestMetaData>';
+    
+      data.forEach((row) => {
+        xml += '<Step>';
+        xml += `<ID>${row.ID}</ID>`;
+        xml += `<Condition>${row.Condition}</Condition>`;
+        xml += `<Duration>${row.Duration}</Duration>`;
+        xml += '</Step>';
+      });
+    
+      xml += '</TestMetaData>';
+      return xml;
+    };
+    
   
     const parseCSV = (text) => {
         const results = Papa.parse(text, {
@@ -28,8 +46,14 @@ const DataGridComponent = () => {
             resizable: true,
             sortable: true,
             editable: key !== 'ID',
+            // Add the following lines:
+            cellClassName: (params) =>
+              key === 'ID' ? 'id-cell' : '',
           }))
         );
+        const xmlData = convertCSVToXML(parsedData);
+        console.log(xmlData);
+        
       };
   
     const handleFileUpload = (event) => {
@@ -54,6 +78,7 @@ const DataGridComponent = () => {
       {columns.length > 0 && data.length > 0 && (
         <DataGrid
           rows={data}
+          rowHeight={25}
           columns={columns}
           slots={{
             toolbar: GridToolbar,
