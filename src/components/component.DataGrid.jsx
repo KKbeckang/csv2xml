@@ -1,27 +1,33 @@
 import {
   DataGrid,
-  GridCellParams,
-  GridToolbar,
-  GridToolbarProps,
-  GridToolbarContainer,
-  GridToolbarExport,
+  useGridApiRef,
   GridToolbarExportContainer,
   GridCsvExportMenuItem,
+  gridFilteredSortedRowIdsSelector,
+  gridVisibleColumnFieldsSelector,
+  GridToolbarContainer,
+  GridToolbarColumnsButton,
+  GridToolbarFilterButton,
+  GridToolbarDensitySelector,
   GridPrintExportMenuItem,
+
 } from "@mui/x-data-grid";
-import MenuItem from '@mui/material/MenuItem';
-import { Button } from "@mui/material";
+import { useGridApiContext } from "@mui/x-data-grid";
+import PropTypes from "prop-types";
+import MenuItem from "@mui/material/MenuItem";
 import { useState } from "react";
 import Papa from "papaparse";
 import "./component.DataGrid.css";
 
 const DataGridComponent = () => {
-   // following code is for the hooks
+  // following code is for the hooks
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
+  const apiRef = useGridApiRef();
+  // useGridApiRef is a hook that returns the apiRef object.
 
   const convertCSVToXML = (data) => {
-  // XML Conversion
+    // XML Conversion
     let xml = '<?xml version="1.0" encoding="UTF-8"?>';
     xml += "<TestMetaData>";
 
@@ -38,7 +44,7 @@ const DataGridComponent = () => {
   };
 
   const parseCSV = (text) => {
-  // CSV Parsing
+    // CSV Parsing
     const results = Papa.parse(text, {
       header: true,
       dynamicTyping: true,
@@ -80,41 +86,83 @@ const DataGridComponent = () => {
     reader.readAsText(file);
   };
 
-  const CustomToolbar = (props) => {
-    const { data } = props;
-
-    const exportToXML = () => {
-      const xmlData = convertCSVToXML(data);
-      const blob = new Blob([xmlData], { type: "application/xml" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "data.xml";
-      link.click();
-      URL.revokeObjectURL(url);
-    };
-
-    return (
-      <div>
-      <GridToolbar {...props}>
-      <GridToolbarContainer>
-      <GridToolbarExport />
-        </GridToolbarContainer>
-        </GridToolbar>
-        <Button variant="contained" color="primary" onClick={exportToXML}>
-          Export to XML
-        </Button>
-      </div>
-    );
+  const getXML = (apiRef) => {
+    const filteredSortedRowIds = gridFilteredSortedRowIdsSelector(apiRef);
+    const visibleColumnsField = gridVisibleColumnFieldsSelector(apiRef);
+  
+    const rowData = filteredSortedRowIds.map((id) => {
+      const row = {};
+      visibleColumnsField.forEach((field) => {
+        row[field] = apiRef.current.getCellParams(id, field).value;
+      });
+      return row;
+    });
+  
+    return convertCSVToXML(rowData);
   };
 
-  const GridToolbarExport = ({ csvOptions, printOptions,exportToXML, ...other }) => (
-    <GridToolbarExportContainer {...other}>
-      <GridCsvExportMenuItem options={csvOptions} />
-      <GridPrintExportMenuItem options={printOptions} />
-      <GridPrintExportMenuItem options={exportToXML} />
-    </GridToolbarExportContainer>
-  );
+  const exportBlob = (blob, filename) => {
+    // Save the blob in a file
+    const url = URL.createObjectURL(blob);
+  
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+  
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    });
+  };
+
+  function XMLExportMenuItem(props) {
+    const apiRef = useGridApiContext();
+    const { hideMenu } = props;
+  
+    return (
+      <MenuItem
+        onClick={() => {
+          const xmlString = getXML(apiRef);
+          const blob = new Blob([xmlString], { type: 'application/xml' });
+          exportBlob(blob, 'DataGrid_demo.xml');
+          hideMenu?.();
+        }}
+      >
+        Download as XML
+      </MenuItem>
+    );
+  }
+
+  XMLExportMenuItem.propTypes = {
+    hideMenu: PropTypes.func,
+  };
+  
+
+  const csvOptions = { delimiter: ';' };
+  const printOptions = { orientation: 'landscape' };
+  function CustomExportButton(props) {
+    // eslint-disable-next-line react/prop-types
+    return (
+      <GridToolbarExportContainer {...props}>
+        <GridCsvExportMenuItem options={csvOptions} />
+        <GridPrintExportMenuItem options={printOptions} />
+        
+        <XMLExportMenuItem /> 
+      </GridToolbarExportContainer>
+    );
+  }
+
+  function CustomToolbar(props) {
+    return (
+      <GridToolbarContainer {...props}>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
+      <CustomExportButton/>
+      </GridToolbarContainer>
+    );
+  }
+
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -128,7 +176,7 @@ const DataGridComponent = () => {
             Toolbar: CustomToolbar,
           }}
           componentsProps={{
-            toolbar: { data },
+            toolbar: { apiRef },
           }}
         />
       )}
