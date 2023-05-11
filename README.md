@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Single Page CVS to XML Tooling Components
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -31,40 +31,23 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+This is a React component using the Material-UI Data Grid library. The DataGridComponent is responsible for uploading a CSV file, parsing it, displaying it in a Data Grid with features such as filtering, sorting, and editing, and exporting the data in CSV, XML, and print formats.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+The component uses several hooks and custom functions:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. useState: It is used to manage the state of data, columns, and isLoading (for the loading indicator).
+2. useGridApiRef: It is a hook that returns the apiRef object, which allows interaction with the Data Grid.
+3. convertCSVToXML: This function takes the parsed CSV data and converts it into XML format.
+4. parseCSV: This function parses the CSV text using the Papa.parse library and sets the data and columns states.
+5. handleFileUpload: It handles the file upload event, reads the contents of the file, and calls the parseCSV function.
+6. UploadMenuItem: This is a custom menu item component for uploading CSV files.
+7. getXML: It takes the apiRef and extracts data from the grid, then calls convertCSVToXML to convert the data into XML format.
+8. exportBlob: It takes a Blob and filename and exports the Blob as a file with the given filename.
+9. XMLExportMenuItem: This is a custom menu item component for exporting the data in XML format.
+10. GoToRowMenuItem: This is a custom menu item component for selecting a specific row in the Data Grid.
+11. csvOptions and printOptions: These options configure the behavior of the CSV and print exports from the Data Grid.
+12. CustomExportButton: It is a custom export button component that includes CSV, Print, and XML export menu items.
+13. CustomToolbar: This is a custom toolbar component that includes the UploadMenuItem, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector, CustomExportButton, and GoToRowMenuItem.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The main return statement of the component renders a DataGrid with the custom toolbar and a LinearProgress loading overlay.https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
