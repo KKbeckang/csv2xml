@@ -6,8 +6,8 @@ This React component uses the Material-UI Data Grid library to display and manip
 
 This project was created using Create React App. To build and run the project, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/[KKbeckang]/[your-repo-name].git`
-2. Install dependencies: `cd [your-repo-name] && npm install`
+1. Clone the repository: `git clone https://github.com/KKbeckang/csv2xml.git`
+2. Install dependencies: `cd csv2xml && npm install`
 3. Start the development server: `npm start`
 4. Open your browser to `http://localhost:3000` to see the app running.
 
