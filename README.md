@@ -1,4 +1,6 @@
-# Data Grid Component with Material-UI
+# Data Grid Component with Material-UI For Factorial Inc
+
+**Author : Rongda Kang by 5/11/2023**
 
 This React component uses the Material-UI Data Grid library to display and manipulate tabular data. It allows users to upload a CSV file, parse it, and display it in a customizable grid with features such as filtering, sorting, and editing. The data can be exported in CSV, XML, and print formats.
 
