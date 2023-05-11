@@ -92,6 +92,7 @@ const DataGridComponent = () => {
   };
 
   const getXML = (apiRef) => {
+    // Get the data from the grid and convert it to XML
     const filteredSortedRowIds = gridFilteredSortedRowIdsSelector(apiRef);
     const visibleColumnsField = gridVisibleColumnFieldsSelector(apiRef);
 
@@ -108,6 +109,7 @@ const DataGridComponent = () => {
 
   const exportBlob = (blob, filename) => {
     // Save the blob in a file
+
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
@@ -121,6 +123,7 @@ const DataGridComponent = () => {
   };
 
   function XMLExportMenuItem(props) {
+    // Create my own XMLExportMenuItem so I could add it to the CustomExportButton
     const apiRef = useGridApiContext();
     const { hideMenu } = props;
 
@@ -141,11 +144,14 @@ const DataGridComponent = () => {
   XMLExportMenuItem.propTypes = {
     hideMenu: PropTypes.func,
   };
-
+  
+  // These options are used to configure the behavior of the CSV and print exports from the DataGrid.
+  // https://mui.com/x/react-data-grid/export/#csvexportoptions-api
   const csvOptions = { delimiter: ";" };
   const printOptions = { orientation: "landscape" };
+
   function CustomExportButton(props) {
-    // eslint-disable-next-line react/prop-types
+    // Create my own CustomeExportButton with CSV, Print and XML
     return (
       <GridToolbarExportContainer {...props}>
         <GridCsvExportMenuItem options={csvOptions} />
@@ -157,6 +163,7 @@ const DataGridComponent = () => {
   }
 
   function CustomToolbar(props) {
+    // Create my own CustomToolbar with CSV, Filter, Density and CustomExportButton
     return (
       <GridToolbarContainer {...props}>
         <GridToolbarColumnsButton />
