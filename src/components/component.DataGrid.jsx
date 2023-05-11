@@ -11,17 +11,18 @@ import {
   GridToolbarDensitySelector,
   GridPrintExportMenuItem,
   useGridApiContext,
+  gridFilterModelSelector,
+  gridSortModelSelector,
 } from "@mui/x-data-grid";
-import TextField from '@mui/material/TextField';
+import TextField from "@mui/material/TextField";
 import PropTypes from "prop-types";
 import MenuItem from "@mui/material/MenuItem";
 import { useState } from "react";
 import Papa from "papaparse";
 import "./component.DataGrid.css";
 import LinearProgress from "@mui/material/LinearProgress";
-import { InputAdornment, IconButton,Box } from "@mui/material";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForwardIos';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { InputAdornment, IconButton, Box } from "@mui/material";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForwardIos";
 
 const DataGridComponent = () => {
   // following code is for the hooks
@@ -38,7 +39,7 @@ const DataGridComponent = () => {
 
     data.forEach((row) => {
       xml += "<Step>";
-      xml += `<StepNum>${row.ID}</StepNum>`;
+      xml += `<StepNum>${row.StepNum}</StepNum>`;
       xml += `<Condition>${row.Condition}</Condition>`;
       xml += `<Duration>${row.Duration}</Duration>`;
       xml += "</Step>";
@@ -57,7 +58,7 @@ const DataGridComponent = () => {
     });
 
     const parsedData = results.data.map((row, index) => {
-      row.id = row["ID"];
+      row.id = row["StepNum"];
       return row;
     });
 
@@ -70,9 +71,9 @@ const DataGridComponent = () => {
         headerName: key,
         resizable: true,
         sortable: true,
-        editable: key !== "ID",
+        editable: key !== "StepNum",
         // Add the following lines:
-        cellClassName: (params) => (key === "ID" ? "id-cell" : ""),
+        cellClassName: (params) => (key === "StepNum" ? "id-cell" : ""),
       }))
     );
     const xmlData = convertCSVToXML(parsedData);
@@ -83,45 +84,43 @@ const DataGridComponent = () => {
     const file = event.target.files[0];
     if (file) {
       setIsLoading(true);
-    const reader = new FileReader();
+      const reader = new FileReader();
 
-    reader.onload = (e) => {
-      const text = e.target.result;
-      parseCSV(text);
-      setIsLoading(false); // Finish loading bar
-    };
+      reader.onload = (e) => {
+        const text = e.target.result;
+        parseCSV(text);
+        setIsLoading(false); // Finish loading bar
+      };
 
-    reader.readAsText(file);
-  }
+      reader.readAsText(file);
+    }
   };
 
   function UploadMenuItem() {
     // Create my own UploadMenuItem so I could add it to the CustomToolbar
     const handleChange = (event) => {
+      // Handle the file upload event
       handleFileUpload(event);
     };
-  
+
     return (
       <MenuItem component="label" htmlFor="file-upload">
-      <Box
-        component="span"
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          cursor: 'pointer',
-          color: '#1976d2', // Change the text color
-          fontSize: '0.8125rem', // Change the text size
-          
-        }}
-      >
-        UPLOAD CSV
-        <input
-          type="file"
-          accept=".csv"
-          id="file-upload"
-          onChange={handleChange}
-          style={{ display: "none" }}
-        />
+        <Box
+          component="span"
+          sx={{
+            cursor: "pointer",
+            color: "#1976d2", // Change the text color
+            fontSize: "0.8125rem", // Change the text size
+          }}
+        >
+          UPLOAD CSV
+          <input
+            type="file"
+            accept=".csv"
+            id="file-upload"
+            onChange={handleChange}
+            style={{ display: "none" }}
+          />
         </Box>
       </MenuItem>
     );
@@ -145,6 +144,7 @@ const DataGridComponent = () => {
 
   const exportBlob = (blob, filename) => {
     // Save the blob in a file
+    // ths function is used in the XMLExportMenuItem
 
     const url = URL.createObjectURL(blob);
 
@@ -162,45 +162,49 @@ const DataGridComponent = () => {
     // Create my own XMLExportMenuItem so I could add it to the CustomExportButton
     const apiRef = useGridApiContext();
     const { hideMenu } = props;
+    // Get the filter and sort model from the grid
+    const filterModel = gridFilterModelSelector(apiRef);
+    const sortModel = gridSortModelSelector(apiRef);
 
-    return (
-      <MenuItem
-        onClick={() => {
-          const xmlString = getXML(apiRef);
-          const blob = new Blob([xmlString], { type: "application/xml" });
-          exportBlob(blob, "DataGrid_demo.xml");
-          hideMenu?.();
-        }}
-      >
-        Download as XML
-      </MenuItem>
-    );
+    const handleClick = () => {
+      if (filterModel.items.length > 0 || sortModel.length > 0) {
+        alert("Please remove all filters and sorting before exporting to XML.");
+        return;
+      }
+
+      const xmlString = getXML(apiRef);
+      const blob = new Blob([xmlString], { type: "application/xml" });
+      exportBlob(blob, "DataGrid_demo.xml");
+      hideMenu?.();
+    };
+
+    return <MenuItem onClick={handleClick}>Download as XML</MenuItem>;
   }
 
   XMLExportMenuItem.propTypes = {
+    // assign the type of the props
     hideMenu: PropTypes.func,
   };
 
-
   function GoToRowMenuItem(props) {
+    // Create my own GoToRowMenuItem so I could add it to the CustomToolbar
+    // and use it to Select to a specific row
     const apiRef = useGridApiContext();
     const { hideMenu } = props;
-    const [rowId, setRowId] = useState('');
-  
+    const [rowId, setRowId] = useState("");
+
     const handleChange = (event) => {
       setRowId(event.target.value);
     };
-  
+
     const handleClick = () => {
       const rowIndex = parseInt(rowId, 10);
       apiRef.current.selectRow(rowIndex, true, true);
       hideMenu?.();
     };
-    
-  
+
     return (
       <MenuItem onClick={handleClick}>
-    
         <TextField
           label="Select the Row"
           type="number"
@@ -217,19 +221,17 @@ const DataGridComponent = () => {
             ),
           }}
         />
-        
       </MenuItem>
     );
   }
-  
+
   GoToRowMenuItem.propTypes = {
     hideMenu: PropTypes.func,
   };
-  
 
   // These options are used to configure the behavior of the CSV and print exports from the DataGrid.
   // https://mui.com/x/react-data-grid/export/#csvexportoptions-api
-  const csvOptions = { allColumns: true,allRows: true };
+  const csvOptions = { allColumns: true, allRows: true };
   const printOptions = { orientation: "landscape" };
 
   function CustomExportButton(props) {
@@ -239,7 +241,6 @@ const DataGridComponent = () => {
         <GridCsvExportMenuItem options={csvOptions} />
         <GridPrintExportMenuItem options={printOptions} />
         <XMLExportMenuItem />
-        
       </GridToolbarExportContainer>
     );
   }
@@ -248,7 +249,7 @@ const DataGridComponent = () => {
     // Create my own CustomToolbar with CSV, Filter, Density and CustomExportButton
     return (
       <GridToolbarContainer {...props}>
-      <UploadMenuItem />
+        <UploadMenuItem />
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
@@ -260,19 +261,19 @@ const DataGridComponent = () => {
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
-        <DataGrid
-          rows={data}
-          rowHeight={28}
-          columns={columns}
-          components={{
-            Toolbar: CustomToolbar,
-            loadingOverlay: LinearProgress
-          }}
-          componentsProps={{
-            toolbar: { apiRef },
-          }}
-          loading={isLoading}
-        />
+      <DataGrid
+        rows={data}
+        rowHeight={30}
+        columns={columns}
+        components={{
+          Toolbar: CustomToolbar,
+          loadingOverlay: LinearProgress,
+        }}
+        componentsProps={{
+          toolbar: { apiRef },
+        }}
+        loading={isLoading}
+      />
     </div>
   );
 };
