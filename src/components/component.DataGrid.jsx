@@ -150,7 +150,9 @@ const DataGridComponent = () => {
     // ths function is used in the XMLExportMenuItem
     // https://mui.com/x/react-data-grid/export/#csvexportoptions-api
     const url = URL.createObjectURL(blob);
-
+    // The "a" inside document.createElement("a") is a string that tells the createElement method 
+    // which type of HTML element to create. In this case, it's creating an anchor element, 
+    // which is represented by the <a> tag in HTML.
     const downloadLink = document.createElement("a");
     downloadLink.href = url;
     downloadLink.download = filename;
@@ -263,8 +265,8 @@ const DataGridComponent = () => {
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
-        <ClearAllButtonMenuItem />
         <CustomExportButton />
+        <ClearAllButtonMenuItem />
         <SelectToRowMenuItem />
       </GridToolbarContainer>
     );
