@@ -66,3 +66,17 @@ This component also allows for customization of the toolbar and export options t
 - **CustomToolbar**: A custom toolbar component that includes the UploadMenuItem, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector, CustomExportButton, and GoToRowMenuItem.
 
 Users can also configure the behavior of the CSV and print exports using the `csvOptions` and `printOptions` properties.
+
+## Technology Used
+
+- **React.js**: A JavaScript library for building user interfaces. It's used in this project to build the UI components.
+
+- **Node.js**: A JavaScript runtime built on Chrome's V8 JavaScript engine. It's used in this project to run the development server and build the application for production.
+
+- **Material UI**: A popular React UI framework with a set of React components that implement Google's Material Design. In this project, it's used to style the application and provide a responsive layout.
+
+- **Papa Parser**: A powerful, in-browser CSV parser. In this project, it's used to parse CSV data into a format that can be used in the Data Grid.
+
+- **Data Grid**: A feature-rich control for displaying data in a tabular format. Its functionalities in this project include data binding, editing, filtering, custom sorting, and more.
+
+
