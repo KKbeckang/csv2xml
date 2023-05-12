@@ -23,6 +23,7 @@ import "./component.DataGrid.css";
 import LinearProgress from "@mui/material/LinearProgress";
 import { InputAdornment, IconButton, Box } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForwardIos";
+import ClearAllButtonMenuItem from "./component.ClearAllButtonMenuItem";
 
 const DataGridComponent = () => {
   // following code is for the hooks
@@ -150,7 +151,7 @@ const DataGridComponent = () => {
     // https://mui.com/x/react-data-grid/export/#csvexportoptions-api
     const url = URL.createObjectURL(blob);
 
-    const downloadLink = document.createElement("DownloadLink");
+    const downloadLink = document.createElement("a");
     downloadLink.href = url;
     downloadLink.download = filename;
     downloadLink.click();
@@ -234,6 +235,8 @@ const DataGridComponent = () => {
     hideMenu: PropTypes.func,
   };
 
+  
+
   // These options are used to configure the behavior of the CSV and print exports from the DataGrid.
   // https://mui.com/x/react-data-grid/export/#csvexportoptions-api
   const csvOptions = { allColumns: true, allRows: true };
@@ -241,6 +244,7 @@ const DataGridComponent = () => {
 
   function CustomExportButton(props) {
     // Create my own CustomeExportButton with CSV, Print and XML
+    // https://mui.com/x/react-data-grid/export/#export-menu
     return (
       <GridToolbarExportContainer {...props}>
         <GridCsvExportMenuItem options={csvOptions} />
@@ -252,12 +256,14 @@ const DataGridComponent = () => {
 
   function CustomToolbar(props) {
     // Create my own CustomToolbar with CSV, Filter, Density and CustomExportButton
+    // https://mui.com/x/react-data-grid/components/
     return (
       <GridToolbarContainer {...props}>
         <UploadMenuItem />
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
+        <ClearAllButtonMenuItem />
         <CustomExportButton />
         <SelectToRowMenuItem />
       </GridToolbarContainer>
