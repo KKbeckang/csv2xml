@@ -32,8 +32,10 @@ const DataGridComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   // useGridApiRef is a hook that returns the apiRef object.
 
-  const convertCSVToXML = (data) => {
-    // XML Conversion
+  const convertXMLFromCsv = (data) => {
+    // XML Conversion from CSV data using the following format
+    // However this is a simple example, you can change it to your own format as needed
+    // I included a alert checking to remove all the filters and sorting before exporting to XML
     let xml = '<?xml version="1.0" encoding="UTF-8"?>';
     xml += "<TestMetaData>";
 
@@ -50,7 +52,7 @@ const DataGridComponent = () => {
   };
 
   const parseCSV = (text) => {
-    // CSV Parsing
+    // CSV Parsing using PapaParse library (https://www.papaparse.com/)
     const results = Papa.parse(text, {
       header: true,
       dynamicTyping: true,
@@ -76,7 +78,7 @@ const DataGridComponent = () => {
         cellClassName: (params) => (key === "StepNum" ? "id-cell" : ""),
       }))
     );
-    const xmlData = convertCSVToXML(parsedData);
+    const xmlData = convertXMLFromCsv(parsedData);
     console.log(xmlData);
   };
 
@@ -139,21 +141,23 @@ const DataGridComponent = () => {
       return row;
     });
 
-    return convertCSVToXML(rowData);
+    return convertXMLFromCsv(rowData);
   };
 
   const exportBlob = (blob, filename) => {
     // Save the blob in a file
     // ths function is used in the XMLExportMenuItem
-
+    // https://mui.com/x/react-data-grid/export/#csvexportoptions-api
     const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
+    const downloadLink = document.createElement("DownloadLink");
+    downloadLink.href = url;
+    downloadLink.download = filename;
+    downloadLink.click();
 
     setTimeout(() => {
+      // For Firefox it is necessary to delay revoking the ObjectURL
+      // because otherwise the link will not work
       URL.revokeObjectURL(url);
     });
   };
@@ -186,9 +190,10 @@ const DataGridComponent = () => {
     hideMenu: PropTypes.func,
   };
 
-  function GoToRowMenuItem(props) {
-    // Create my own GoToRowMenuItem so I could add it to the CustomToolbar
-    // and use it to Select to a specific row
+  function SelectToRowMenuItem(props) {
+    // Create my own SelectToRowMenuItem so I could add it to the CustomToolbar
+    // and use it to Select to a specific row in the grid
+    // use API to select the row in the grid (https://mui.com/x/data-grid/api/)
     const apiRef = useGridApiContext();
     const { hideMenu } = props;
     const [rowId, setRowId] = useState("");
@@ -225,7 +230,7 @@ const DataGridComponent = () => {
     );
   }
 
-  GoToRowMenuItem.propTypes = {
+  SelectToRowMenuItem.propTypes = {
     hideMenu: PropTypes.func,
   };
 
@@ -254,7 +259,7 @@ const DataGridComponent = () => {
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <CustomExportButton />
-        <GoToRowMenuItem />
+        <SelectToRowMenuItem />
       </GridToolbarContainer>
     );
   }
