@@ -5,6 +5,8 @@ import { Box } from "@mui/material";
 import { useGridApiContext } from "@mui/x-data-grid";
 
 function ClearAllButtonMenuItem(props) {
+    // Create my own SelectToRowMenuItem so I could add it to the CustomToolbar
+    // and use it to Select to a specific row in the grid Here are usage of API to select the row in the grid (https://mui.com/x/data-grid/api/)
   const apiRef = useGridApiContext();
   const { hideMenu } = props;
 
@@ -27,7 +29,7 @@ function ClearAllButtonMenuItem(props) {
           fontSize: "", // Change the text size
         }}
       >
-        ClEAR FILTER
+        CLEAR FILTER
       </Box>
     </MenuItem>
   );

@@ -3,28 +3,22 @@ import {
   useGridApiRef,
   GridToolbarExportContainer,
   GridCsvExportMenuItem,
-  gridFilteredSortedRowIdsSelector,
-  gridVisibleColumnFieldsSelector,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
   GridToolbarDensitySelector,
   GridPrintExportMenuItem,
-  useGridApiContext,
-  gridFilterModelSelector,
-  gridSortModelSelector,
+  
 } from "@mui/x-data-grid";
-import TextField from "@mui/material/TextField";
-import PropTypes from "prop-types";
 import MenuItem from "@mui/material/MenuItem";
 import { useState } from "react";
 import Papa from "papaparse";
 import "./component.DataGrid.css";
 import LinearProgress from "@mui/material/LinearProgress";
-import { InputAdornment, IconButton, Box } from "@mui/material";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForwardIos";
+import { Box } from "@mui/material";
 import ClearAllButtonMenuItem from "./component.ClearAllButtonMenuItem";
 import XMLExportMenuItem from "./component.XMLExportMenuItem";
+import SelectToRowMenuItem from "./component.SelectToRowMenuItem";
 const DataGridComponent = () => {
   // following code is for the hooks
   const [data, setData] = useState([]);
@@ -108,53 +102,6 @@ const DataGridComponent = () => {
       </MenuItem>
     );
   }
-
-
-
-
-  function SelectToRowMenuItem(props) {
-    // Create my own SelectToRowMenuItem so I could add it to the CustomToolbar
-    // and use it to Select to a specific row in the grid
-    // use API to select the row in the grid (https://mui.com/x/data-grid/api/)
-    const apiRef = useGridApiContext();
-    const { hideMenu } = props;
-    const [rowId, setRowId] = useState("");
-
-    const handleChange = (event) => {
-      setRowId(event.target.value);
-    };
-
-    const handleClick = () => {
-      const rowIndex = parseInt(rowId, 10);
-      apiRef.current.selectRow(rowIndex, true, true);
-      hideMenu?.();
-    };
-
-    return (
-      <MenuItem onClick={handleClick}>
-        <TextField
-          label="Select the Row"
-          type="number"
-          value={rowId}
-          size="small"
-          onChange={handleChange}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handleClick}>
-                  <ArrowForwardIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </MenuItem>
-    );
-  }
-
-  SelectToRowMenuItem.propTypes = {
-    hideMenu: PropTypes.func,
-  };
 
   
 
