@@ -8,7 +8,6 @@ import {
   GridToolbarFilterButton,
   GridToolbarDensitySelector,
   GridPrintExportMenuItem,
-  
 } from "@mui/x-data-grid";
 import MenuItem from "@mui/material/MenuItem";
 import { useState } from "react";
@@ -26,7 +25,6 @@ const DataGridComponent = () => {
   const apiRef = useGridApiRef();
   const [isLoading, setIsLoading] = useState(false);
   // useGridApiRef is a hook that returns the apiRef object.
-
 
   const parseCSV = (text) => {
     // CSV Parsing using PapaParse library (https://www.papaparse.com/)
@@ -103,8 +101,6 @@ const DataGridComponent = () => {
     );
   }
 
-  
-
   // These options are used to configure the behavior of the CSV and print exports from the DataGrid.
   // https://mui.com/x/react-data-grid/export/#csvexportoptions-api
   const csvOptions = { allColumns: true, allRows: true };
@@ -152,6 +148,20 @@ const DataGridComponent = () => {
           toolbar: { apiRef },
         }}
         loading={isLoading}
+        onEditCellChangeCommitted={(params, event) => {
+          if (
+            params.field === "Duration" &&
+            params.props.value !== "N/A" &&
+            (isNaN(params.props.value) ||
+              params.props.value < 0 ||
+              params.props.value > 300)
+          ) {
+            alert("Invalid Duration value. It must be between 0-300 or 'N/A'");
+          } else {
+            // Perform your normal data update operation here
+            // Update your state with the new value
+          }
+        }}
       />
     </div>
   );
