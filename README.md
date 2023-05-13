@@ -40,6 +40,10 @@ This component uses several hooks and custom functions to provide the following 
 - **Filtering**: Users can filter the data based on column values.
 
 - **Sorting**: Users can sort the data based on column values.
+- 
+- **Filtering**: Users can filter the data based on column values.
+
+- **Clear All Filter/Sort**: Users deactivate all the filter and sorting activated.
 
 - **Editing**: Users can edit the data directly in the grid.
 
@@ -51,6 +55,8 @@ This component uses several hooks and custom functions to provide the following 
 
 - **Go to Row**: Users can select a specific row in the grid.
 
+- **ALERT When Exporting XML** : To Ensure the Data Out Put is correct the Filters should be 
+
 ## Customization
 
 This component also allows for customization of the toolbar and export options through the following components:
@@ -61,9 +67,12 @@ This component also allows for customization of the toolbar and export options t
 
 - **GoToRowMenuItem**: A custom menu item component for selecting a specific row in the Data Grid.
 
+- **ClearALLMenuItem**: A custom menu item component for deactivatet all filters and sorting in the Data Grid.
+
 - **CustomExportButton**: A custom export button component that includes CSV, Print, and XML export menu items.
 
 - **CustomToolbar**: A custom toolbar component that includes the UploadMenuItem, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector, CustomExportButton, and GoToRowMenuItem.
+
 
 Users can also configure the behavior of the CSV and print exports using the `csvOptions` and `printOptions` properties.
 
